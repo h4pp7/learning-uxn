@@ -1,0 +1,21 @@
+( hello.tal )
+( devices )
+|10 @Console [ &vector $2 &read $1 &pad $5 &write $1 &error $1 ]
+
+( macro to print a character to standard output. .Console/write DEO is the same
+as |0100 LIT 68 LIT 18 DEO )
+%EMIT  { .Console/write DEO }
+
+( macro for printing a new line )
+%NL { #0a EMIT } ( use of a macro in macro definition )
+
+( main program 
+  push characters on the stack and print them all in the end )
+
+|0100 #0a
+      LIT 'o
+      LIT 'l
+      LIT 'l
+      LIT 'e
+      LIT 'h
+      EMIT EMIT EMIT EMIT EMIT EMIT 

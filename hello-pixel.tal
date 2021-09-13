@@ -1,0 +1,61 @@
+( varvara device starting at 00
+                                    output addresses for red, green and blue )
+|00 @System  [ &vector $2 &pad $6   &r $2 &g $2 &b $2 ]
+
+( screen device )
+|20 @Screen  [ &vector $2 &width $2 &height $2 &pad  $2 &x $2 &y $2 &addr $2 &pixel $1 &sprite $1 ]
+
+( macros )
+( draw a pixel to the foreground in color 1 )
+%DRAW-PIXEL { #11 .Screen/pixel DEO }
+
+( increment the x coordinate )
+%INC-X { .Screen/x DEI2 INC2 .Screen/x DEO2 }
+
+( macro - increment by an arbitrary number )
+%ADD-Y { .Screen/y DEI2 ADD2 .Screen/y DEO2 }
+
+( main program ) 
+|0100
+      ( set system colors 
+        first byte of the r, g and b device is for color 0, second byte is for
+        color 1 etc )
+
+      #2ce9 .System/r DEO2
+      #01c0 .System/g DEO2
+      #2ce5 .System/b DEO2
+
+      ( draw a pixel to the screen )
+      #0008 .Screen/x DEO2
+      #0008 .Screen/y DEO2
+      DRAW-PIXEL
+
+      ( draw two lines to the screen )
+      #000a ADD-Y
+      DRAW-PIXEL
+
+      INC-X DRAW-PIXEL
+      INC-X DRAW-PIXEL
+      INC-X DRAW-PIXEL
+      INC-X DRAW-PIXEL
+      INC-X DRAW-PIXEL
+      INC-X DRAW-PIXEL
+      INC-X DRAW-PIXEL
+      INC-X DRAW-PIXEL
+      INC-X DRAW-PIXEL
+      INC-X DRAW-PIXEL
+      INC-X DRAW-PIXEL
+
+      #000f ADD-Y
+
+      INC-X DRAW-PIXEL
+      INC-X DRAW-PIXEL
+      INC-X DRAW-PIXEL
+      INC-X DRAW-PIXEL
+      INC-X DRAW-PIXEL
+      INC-X DRAW-PIXEL
+      INC-X DRAW-PIXEL
+      INC-X DRAW-PIXEL
+      INC-X DRAW-PIXEL
+      INC-X DRAW-PIXEL
+      INC-X DRAW-PIXEL
