@@ -6,48 +6,84 @@
 |20 @Screen  [ &vector $2 &width $2 &height $2 &pad  $2 &x $2 &y $2 &addr $2 &pixel $1 &sprite $1 ]
 
 ( macros )
-%INIT-X { #0008 .Screen/x DEO2 } ( -- )
-%INIT-Y { #0008 .Screen/y DEO2 } ( -- )
-%8ADD-X { .Screen/x DEI2 #0008 ADD2 .Screen/x DEO2 } ( -- )
-%8ADD-Y { .Screen/y DEI2 #0008 ADD2 .Screen/y DEO2 } ( -- )
+( half a number by bit shifting it )
+%HALF { #01 SFT } ( number -- number/2 )
+%HALF2 { #01 SFT2 } ( number -- number/2 )
+
+%ADD-X { .Screen/x DEI2 ADD2 .Screen/x DEO2 }
+%ADD-Y { .Screen/y DEI2 ADD2 .Screen/y DEO2 }
+%8ADD-X { #0008 ADD-X } ( -- )
+%8ADD-Y { #0008 ADD-Y } ( -- )
+%8SUB-X { .Screen/x DEI2 #0008 SUB2 .Screen/x DEO2 } ( -- )
+%8SUB-Y { .Screen/y DEI2 #0008 SUB2 .Screen/y DEO2 } ( -- )
+
+( set coordinates to the center of the screen and move two sprite lengths to
+  the left and up )
+%CENTER-X { .Screen/width DEI2 HALF2 .Screen/x DEO2 } ( -- )
+%CENTER-Y { .Screen/height DEI2 HALF2 .Screen/y DEO2 } ( -- )
+%INIT-X { CENTER-X 8SUB-X 8SUB-X } ( -- )
+%INIT-Y { CENTER-Y 8SUB-Y 8SUB-Y } ( -- )
 
 ( main program ) 
 |0100
       ( set system colors )
-      #2ce9 .System/r DEO2
-      #01c0 .System/g DEO2
-      #2ce5 .System/b DEO2
+      #0bdf .System/r DEO2
+      #45af .System/g DEO2
+      #863f .System/b DEO2
 
       ( set initial x,y coordinates )
       INIT-X INIT-Y
 
       ( set sprite address )
-      ;square .Screen/addr DEO2
+      ;cat .Screen/addr DEO2
 
       ( draw the sprite in all 16 possible variants of the low nibble )
       ( arrange the sprites in a 4x4 grid by changing the x and y coordinates )
-      #00 .Screen/sprite DEO 8ADD-X
-      #01 .Screen/sprite DEO 8ADD-X
-      #02 .Screen/sprite DEO 8ADD-X
-      #03 .Screen/sprite DEO 8ADD-Y
+      #00 .Screen/sprite DEO 8ADD-X #0001 ADD-X
+      #01 .Screen/sprite DEO 8ADD-X #0001 ADD-X
+      #02 .Screen/sprite DEO 8ADD-X #0001 ADD-X
+      #03 .Screen/sprite DEO 8ADD-Y #0001 ADD-X
+      #0001 ADD-Y
+                 
+      INIT-X     
+      #04 .Screen/sprite DEO 8ADD-X #0001 ADD-X
+      #05 .Screen/sprite DEO 8ADD-X #0001 ADD-X
+      #06 .Screen/sprite DEO 8ADD-X #0001 ADD-X
+      #07 .Screen/sprite DEO 8ADD-Y #0001 ADD-X
+      #0001 ADD-Y
+                 
+      INIT-X     
+      #08 .Screen/sprite DEO 8ADD-X #0001 ADD-X
+      #09 .Screen/sprite DEO 8ADD-X #0001 ADD-X
+      #0a .Screen/sprite DEO 8ADD-X #0001 ADD-X
+      #0b .Screen/sprite DEO 8ADD-Y #0001 ADD-X
+      #0001 ADD-Y
+                 
+      INIT-X     
+      #0c .Screen/sprite DEO 8ADD-X #0001 ADD-X
+      #0d .Screen/sprite DEO 8ADD-X #0001 ADD-X
+      #0e .Screen/sprite DEO 8ADD-X #0001 ADD-X
+      #0f .Screen/sprite DEO 8ADD-Y #0001 ADD-X
 
+      ( draw the tile in the three flipped variants )
       INIT-X
-      #04 .Screen/sprite DEO 8ADD-X
-      #05 .Screen/sprite DEO 8ADD-X
-      #06 .Screen/sprite DEO 8ADD-X
-      #07 .Screen/sprite DEO 8ADD-Y
+      ( small vertical margin )
+      #0002 ADD-Y
+      ( move to the right half a sprite width )
+      #0003 ADD-X
 
-      INIT-X
-      #08 .Screen/sprite DEO 8ADD-X
-      #09 .Screen/sprite DEO 8ADD-X
-      #0a .Screen/sprite DEO 8ADD-X
-      #0b .Screen/sprite DEO 8ADD-Y
+      #12 .Screen/sprite DEO 8ADD-X
 
-      INIT-X
-      #0c .Screen/sprite DEO 8ADD-X
-      #0d .Screen/sprite DEO 8ADD-X
-      #0e .Screen/sprite DEO 8ADD-X
-      #0f .Screen/sprite DEO 8ADD-Y
+      ( 1 px gap )
+      #0001 ADD-X
+      #22 .Screen/sprite DEO 8ADD-X
+      #0001 ADD-X
+      #32 .Screen/sprite DEO 8ADD-X
+      
+      #0006 ADD-X
+      ( draw square at the end )
+      ;square .Screen/addr DEO2
+      #09 .Screen/sprite DEO
 
 BRK
 
@@ -63,3 +99,14 @@ BRK
   11111111:  ff )
 
 @square ff81 8181 8181 81ff
+
+( 00001010:  0a
+  00011111:  1f
+  01001110:  4e
+  10011111:  9f
+  10111111:  bf
+  10111110:  be
+  10111110:  be
+  01111111:  7f )
+
+@cat 0a1f 4e9f bfbe be7f

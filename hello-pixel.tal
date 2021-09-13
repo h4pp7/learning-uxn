@@ -21,9 +21,9 @@
         first byte of the r, g and b device is for color 0, second byte is for
         color 1 etc )
 
-      #2ce9 .System/r DEO2
-      #01c0 .System/g DEO2
-      #2ce5 .System/b DEO2
+      #0bdf .System/r DEO2
+      #45af .System/g DEO2
+      #863f .System/b DEO2
 
       ( draw a pixel to the screen )
       #0008 .Screen/x DEO2
